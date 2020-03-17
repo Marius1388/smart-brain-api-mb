@@ -1,4 +1,5 @@
 const express =require('express');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const bcrypt= require('bcrypt-nodejs');
 const cors =require('cors');
@@ -12,13 +13,14 @@ const image = require('./controllers/image');
 const db = knex({
     client: 'pg',
     connection: {
-      connectionString: process.env.DATABASE_URL,
-      // next lines are for development use only
+      // !!!!! commented lines are for deployment use only!!!!
+      // connectionString: process.env.DATABASE_URL,
       // host : 'postgresql-animated-50501',
-      // user : 'postgres',
-      // password : process.env.POSTRGRESPASSWORD,
-      // database : 'smart-brain'
-      ssl: true
+      host : '127.0.0.1',
+      user : 'postgres',
+      password : process.env.POSTRGRESPASSWORD,
+      database : 'smart-brain'
+      // ssl: true
     }
   });
 
