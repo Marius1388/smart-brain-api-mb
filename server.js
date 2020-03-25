@@ -10,6 +10,7 @@ const register = require('./controllers/register');
 const signin =require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
+const auth = require('./controllers/authorization');
 
 const db = knex({
     client: 'pg',
@@ -29,7 +30,6 @@ const db = knex({
 
 
 const app = express();
-// console.log('when?');
 app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan('combined'));
@@ -39,18 +39,21 @@ app.get('/',(req,res)=>{
 })
 
 // SIGN IN ROUTE
-app.post('/signin',(req,res)=>{signin.handleSignin(req,res, db, bcrypt)})
+app.post('/signin',signin.signinAuthentication(db, bcrypt))
 
 // REGISTER ROUTE
 app.post('/register', (req, res) => {register.handleRegister(req,res, db, bcrypt)})
 
 // PROFILE/:ID ROUTE
-app.get('/profile/:id',(req,res) => {profile.handleProfile(req,res,db)})
+app.get('/profile/:id',auth.requireAuth, (req,res) => {profile.handleProfileGet(req,res,db)})
+
+//UPDATE USER PROFILE
+app.post('/profile/:id', auth.requireAuth, (req,res)=>{ profile.handleProfileUpdate(req,res,db)})
 
 //Update the user to increase their entries count, every time they submit an image
 
-app.put('/image', (req,res) => {image.handleImage(req,res,db)})
-app.post('/imageUrl', (req,res) => {image.handleApiCall(req,res)})
+app.put('/image', auth.requireAuth,(req,res) => {image.handleImage(req,res,db)})
+app.post('/imageUrl', auth.requireAuth, (req,res) => {image.handleApiCall(req,res)})
 
 
 app.listen( 3000 || process.env.PORT, ()=> {
