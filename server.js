@@ -11,6 +11,7 @@ const signin =require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 const auth = require('./controllers/authorization');
+const signout = require('./controllers/signout');
 
 const db = knex({
     client: 'pg',
@@ -39,10 +40,10 @@ app.get('/',(req,res)=>{
 })
 
 // SIGN IN ROUTE
-app.post('/signin',signin.signinAuthentication(db, bcrypt))
+app.post('/signin',signin.signinAuthentication(db, bcrypt));
 
 // REGISTER ROUTE
-app.post('/register', (req, res) => {register.handleRegister(req,res, db, bcrypt)})
+app.post('/register', register.registerAuthentication(db, bcrypt));
 
 // PROFILE/:ID ROUTE
 app.get('/profile/:id',auth.requireAuth, (req,res) => {profile.handleProfileGet(req,res,db)})
@@ -54,6 +55,9 @@ app.post('/profile/:id', auth.requireAuth, (req,res)=>{ profile.handleProfileUpd
 
 app.put('/image', auth.requireAuth,(req,res) => {image.handleImage(req,res,db)})
 app.post('/imageUrl', auth.requireAuth, (req,res) => {image.handleApiCall(req,res)})
+
+//SIGN OUT FUNCTIONALITY
+app.delete('/signout', (req, res) => {signout.handleSignout(req, res)})
 
 
 app.listen( 3000 || process.env.PORT, ()=> {

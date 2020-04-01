@@ -9,7 +9,7 @@ const requireAuth = (req, res, next) => {
         if(err|| !reply){
             return res.status(401).json('Unauthorized')
         }
-        console.log('you shall pass')
+        console.log('You are authorized. You shall pass')
         return next();
     })
 }
